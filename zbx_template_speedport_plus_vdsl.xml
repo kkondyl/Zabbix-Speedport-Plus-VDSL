@@ -150,7 +150,7 @@
                             <uuid>9905df6437f54d6bb1e4ebd785457b08</uuid>
                             <expression>avg(/Speedport Plus VDSL HTTP JSON/modem.dsl.crc.per_hour,15m)&gt;{$CRC.RATE.WARN}</expression>
                             <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
-                            <recovery_expression>avg(/Speedport Plus VDSL HTTP JSON/modem.dsl.crc.per_hour,15m)&gt;{$CRC.RATE.WARN.RECOVER}</recovery_expression>
+                            <recovery_expression>avg(/Speedport Plus VDSL HTTP JSON/modem.dsl.crc.per_hour,15m)&lt;{$CRC.RATE.WARN.RECOVER}</recovery_expression>
                             <name>CRC rate elevated: {ITEM.LASTVALUE1} events/h (avg 15m &gt; {$CRC.RATE.WARN})</name>
                             <priority>WARNING</priority>
                             <dependencies>
