@@ -48,11 +48,15 @@ Rates (Mbps)
 - modem.dsl.max_down -> attainable downstream
 - modem.dsl.max_up -> attainable upstream
 
+![Bandwidth](docs/screenshots/vdsl_bandwidth.png)
+
 Line quality (dB)
 - modem.dsl.snr.down -> SNR margin down
 - modem.dsl.snr.up -> SNR margin up
 - modem.dsl.attn.down -> attenuation down
 - modem.dsl.attn.up -> attenuation up
+
+![Attenuation](docs/screenshots/vdsl_attenuation.png)
 
 Errors
 - modem.dsl.crc -> CRC errors (cumulative counter)
@@ -71,3 +75,7 @@ Metadata
 - CRC rate warning
 - CRC rate Critical
 - Sync speed higher than attainable
+
+**Dashboard view**
+
+![dashboard view](docs/screenshots/vdsl_dashboard.png)
