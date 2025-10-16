@@ -6,7 +6,7 @@ Designed and tested for Zabbix 7.0 (probably works on 6.4+)
 
 # What this template does
 
-Uses a single HTTP agent master item to fetch http://<modem-ip>/data/Status.json.
+Uses a single HTTP agent master item to fetch http://modem-ip/data/Status.json.
 
 Parses  and processes JSON attributes into dependent items (no extra polling load).
 
