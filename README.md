@@ -41,6 +41,8 @@ Status / Times
 - modem.dsl.status -> DSL state (“online”) (text; heartbeat 1h)
 - modem.dsl.online.string -> last DSL online time as string (text; heartbeat 1d)
 - modem.router.uptime.string -> router uptime as string
+- modem.dsl.sync.uptime.seconds -> DSL sync uptime
+- modem.dsl.uptime.seconds -> DSL link uptime
 
 Rates (Mbps)
 - modem.dsl.down -> downstream sync
