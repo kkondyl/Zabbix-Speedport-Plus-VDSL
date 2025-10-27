@@ -62,7 +62,7 @@
                         <step>
                             <type>DISCARD_UNCHANGED_HEARTBEAT</type>
                             <parameters>
-                                <parameter>1h</parameter>
+                                <parameter>15m</parameter>
                             </parameters>
                         </step>
                     </preprocessing>
@@ -88,7 +88,7 @@
                         <step>
                             <type>DISCARD_UNCHANGED_HEARTBEAT</type>
                             <parameters>
-                                <parameter>1h</parameter>
+                                <parameter>15m</parameter>
                             </parameters>
                         </step>
                     </preprocessing>
@@ -102,6 +102,7 @@
                     <type>DEPENDENT</type>
                     <key>modem.dsl.crc</key>
                     <delay>0</delay>
+                    <units>errors</units>
                     <preprocessing>
                         <step>
                             <type>JSONPATH</type>
@@ -139,6 +140,14 @@
                             <type>MULTIPLIER</type>
                             <parameters>
                                 <parameter>3600</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>JAVASCRIPT</type>
+                            <parameters>
+                                <parameter>// clamp negatives to zero
+var v = Number(value);
+return (isFinite(v) &amp;&amp; v &gt; 0) ? v : 0;</parameter>
                             </parameters>
                         </step>
                     </preprocessing>
@@ -209,6 +218,7 @@
                     <type>DEPENDENT</type>
                     <key>modem.dsl.fec</key>
                     <delay>0</delay>
+                    <units>errors</units>
                     <preprocessing>
                         <step>
                             <type>JSONPATH</type>
@@ -359,6 +369,12 @@
                                 <parameter>\1</parameter>
                             </parameters>
                         </step>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>15m</parameter>
+                            </parameters>
+                        </step>
                     </preprocessing>
                     <master_item>
                         <key>modem.status.json</key>
@@ -392,6 +408,12 @@
                             <parameters>
                                 <parameter>([0-9.]+)\s*/\s*([0-9.]+)</parameter>
                                 <parameter>\2</parameter>
+                            </parameters>
+                        </step>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <parameters>
+                                <parameter>15m</parameter>
                             </parameters>
                         </step>
                     </preprocessing>
@@ -460,6 +482,46 @@
                     </master_item>
                 </item>
                 <item>
+                    <uuid>03a67fa8dd854b67ab13430b95af1550</uuid>
+                    <name>DSL sync uptime (seconds)</name>
+                    <type>DEPENDENT</type>
+                    <key>modem.dsl.sync.uptime.seconds</key>
+                    <delay>0</delay>
+                    <units>s</units>
+                    <preprocessing>
+                        <step>
+                            <type>JAVASCRIPT</type>
+                            <parameters>
+                                <parameter>// Parse full JSON and compute: datetime(now) - dsl_sync_time  (no TZ conversion)
+var arr = JSON.parse(value);
+
+function getVar(id) {
+  for (var i = 0; i &lt; arr.length; i++) {
+    var row = arr[i];
+    if (row &amp;&amp; row.varid === id) {
+      return String(row.varvalue);
+    }
+  }
+  throw 'Missing ' + id;
+}
+
+function toEpochNaive(s) {
+  var m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(s);
+  if (!m) throw 'Bad datetime: ' + s;
+  return Math.floor(Date.UTC(+m[1], +m[2]-1, +m[3], +m[4], +m[5], +m[6]) / 1000);
+}
+
+var nowS    = getVar('datetime');         // e.g. &quot;2025-10-15 14:42:14&quot;
+var syncS = getVar('dsl_sync_time');      // e.g. &quot;2025-10-14 18:13:47&quot;
+return toEpochNaive(nowS) - toEpochNaive(syncS);</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>modem.status.json</key>
+                    </master_item>
+                </item>
+                <item>
                     <uuid>8001c36fa87f48dcac0423c69e4b2052</uuid>
                     <name>DSL upstream</name>
                     <type>DEPENDENT</type>
@@ -484,6 +546,46 @@
                             <type>DISCARD_UNCHANGED_HEARTBEAT</type>
                             <parameters>
                                 <parameter>15m</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>modem.status.json</key>
+                    </master_item>
+                </item>
+                <item>
+                    <uuid>4b6877c4091c4bf8b933e35d50762d40</uuid>
+                    <name>DSL link uptime (seconds)</name>
+                    <type>DEPENDENT</type>
+                    <key>modem.dsl.uptime.seconds</key>
+                    <delay>0</delay>
+                    <units>s</units>
+                    <preprocessing>
+                        <step>
+                            <type>JAVASCRIPT</type>
+                            <parameters>
+                                <parameter>// Parse full JSON and compute: datetime(now) - dsl_online_time  (no TZ conversion)
+var arr = JSON.parse(value);
+
+function getVar(id) {
+  for (var i = 0; i &lt; arr.length; i++) {
+    var row = arr[i];
+    if (row &amp;&amp; row.varid === id) {
+      return String(row.varvalue);
+    }
+  }
+  throw 'Missing ' + id;
+}
+
+function toEpochNaive(s) {
+  var m = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(s);
+  if (!m) throw 'Bad datetime: ' + s;
+  return Math.floor(Date.UTC(+m[1], +m[2]-1, +m[3], +m[4], +m[5], +m[6]) / 1000);
+}
+
+var nowS    = getVar('datetime');         // e.g. &quot;2025-10-15 14:42:14&quot;
+var onlineS = getVar('dsl_online_time');  // e.g. &quot;2025-10-14 18:13:47&quot;
+return toEpochNaive(nowS) - toEpochNaive(onlineS);</parameter>
                             </parameters>
                         </step>
                     </preprocessing>
@@ -561,11 +663,11 @@ return d;</parameter>
                 </item>
                 <item>
                     <uuid>7b82ef69e3e0423ba00fad7a12509a55</uuid>
-                    <name>uptime</name>
+                    <name>Router uptime</name>
                     <type>DEPENDENT</type>
                     <key>modem.router.uptime.string</key>
                     <delay>0</delay>
-                    <units>s</units>
+                    <trends>0</trends>
                     <preprocessing>
                         <step>
                             <type>JSONPATH</type>
