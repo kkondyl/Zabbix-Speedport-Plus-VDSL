@@ -16,7 +16,8 @@ Includes tuning macros so you can adjust thresholds without editing items.
 
 # Prerequisites
 
-Sercomm SpeedPort Plus VDSL modem from Cosmote or any other ISP
+Sercomm SpeedPort Plus VDSL modem from Cosmote or any other ISP.
+
 Your Zabbix Server/Proxy must be able to reach the modem’s web UI.
 
 # Template macros
